@@ -172,6 +172,7 @@ static double prog_start_time;
 
 static volatile bool debugger_running = false;
 static uv_async_t dispatch_debug_messages_async;
+static uv_async_t emit_debug_enabled_async;
 
 // Declared in node_internals.h
 Isolate* node_isolate = NULL;
@@ -2504,19 +2505,24 @@ static void PrintHelp();
 static void ParseDebugOpt(const char* arg) {
   const char *p = 0;
 
-  use_debug_agent = true;
-  if (!strcmp (arg, "--debug-brk")) {
-    debug_wait_connect = true;
-    return;
-  } else if (!strcmp(arg, "--debug")) {
-    return;
-  } else if (strstr(arg, "--debug-brk=") == arg) {
-    debug_wait_connect = true;
+  if (strstr(arg, "--debug-port=") == arg) {
     p = 1 + strchr(arg, '=');
     debug_port = atoi(p);
-  } else if (strstr(arg, "--debug=") == arg) {
-    p = 1 + strchr(arg, '=');
-    debug_port = atoi(p);
+  } else {
+    use_debug_agent = true;
+    if (!strcmp (arg, "--debug-brk")) {
+      debug_wait_connect = true;
+      return;
+    } else if (!strcmp(arg, "--debug")) {
+      return;
+    } else if (strstr(arg, "--debug-brk=") == arg) {
+      debug_wait_connect = true;
+      p = 1 + strchr(arg, '=');
+      debug_port = atoi(p);
+    } else if (strstr(arg, "--debug=") == arg) {
+      p = 1 + strchr(arg, '=');
+      debug_port = atoi(p);
+    }
   }
   if (p && debug_port > 1024 && debug_port <  65536)
       return;
@@ -2556,6 +2562,7 @@ static void PrintHelp() {
          "\n"
          "Documentation can be found at http://nodejs.org/\n");
 }
+
 
 // Parse node command line arguments.
 static void ParseArgs(int argc, char **argv) {
@@ -2643,6 +2650,26 @@ static void DispatchMessagesDebugAgentCallback() {
 }
 
 
+// Called from the main thread
+static void EmitDebugEnabledAsyncCallback(uv_async_t* handle, int status) {
+  HandleScope handle_scope(node_isolate);
+  Local<Object> obj = Object::New();
+  obj->Set(String::New("cmd"), String::New("NODE_DEBUG_ENABLED"));
+  Local<Value> args[] = { String::New("internalMessage"), obj };
+  MakeCallback(process, "emit", ARRAY_SIZE(args), args);
+}
+
+
+// Called from the signal handler (unix) or off-thread (windows)
+static void EmitDebugEnabled() {
+  uv_async_init(uv_default_loop(),
+                &emit_debug_enabled_async,
+                EmitDebugEnabledAsyncCallback);
+  uv_unref((uv_handle_t*) &emit_debug_enabled_async);
+  uv_async_send(&emit_debug_enabled_async);
+}
+
+
 static void EnableDebug(bool wait_connect) {
   // If we're called from another thread, make sure to enter the right
   // v8 isolate.
@@ -2669,6 +2696,11 @@ static void EnableDebug(bool wait_connect) {
   fflush(stderr);
 
   debugger_running = true;
+
+  // Do not emit _debug_enabled when debugger is enabled before starting
+  // the main process (i.e. when called via `node --debug`)
+  if (!process.IsEmpty())
+    EmitDebugEnabled();
 
   node_isolate->Exit();
 }
@@ -3001,16 +3033,9 @@ void AtExit(void (*cb)(void* arg), void* arg) {
 
 void EmitExit(v8::Handle<v8::Object> process_l) {
   // process.emit('exit')
-  process_l->Set(String::NewSymbol("_exiting"), True());
-  Local<Value> emit_v = process_l->Get(String::New("emit"));
-  assert(emit_v->IsFunction());
-  Local<Function> emit = Local<Function>::Cast(emit_v);
-  Local<Value> args[] = { String::New("exit"), Integer::New(0) };
-  TryCatch try_catch;
-  emit->Call(process_l, 2, args);
-  if (try_catch.HasCaught()) {
-    FatalException(try_catch);
-  }
+  process_l->Set(String::NewSymbol("_exiting"), True(node_isolate));
+  Local<Value> args[] = { String::New("exit"), Integer::New(0, node_isolate) };
+  MakeCallback(process, "emit", ARRAY_SIZE(args), args);
 }
 
 static char **copy_argv(int argc, char **argv) {
