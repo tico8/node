@@ -16,6 +16,9 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
+/* Including libuv ensures that uintptr_t is defined. */
+#include <uv.h>
+
 typedef void *QUEUE[2];
 
 /* Private macros. */
@@ -26,7 +29,7 @@ typedef void *QUEUE[2];
 
 /* Public macros. */
 #define QUEUE_DATA(ptr, type, field)                                          \
-  ((type *) ((char *) (ptr) - ((long) &((type *) 0)->field)))
+  ((type *) ((char *) (ptr) - ((uintptr_t) &((type *) 0)->field)))
 
 #define QUEUE_FOREACH(q, h)                                                   \
   for ((q) = (QUEUE *) (*(h))[0]; (q) != (h); (q) = (QUEUE *) (*(q))[0])
