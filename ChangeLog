@@ -1,3 +1,13 @@
+2013.08.08, Version 0.10.15 (Pached)
+
+* Change the implementation to match the current version of V8
+
+* cluster: use round-robin load balancing (cherry picked from commit e72cd415adf2ca12daddc001cc3fe953cdb4b507)
+
+* debugger, cluster: each worker has new debug port (cherry picked from commit 43ec1b1c2e77d21c7571acd39860b9783aaf5175)
+
+* cluster: clean up lib/cluster.js (cherry picked from commit 41b75ca9263f368db790fbdcc3963bb1a8c5cb7e)
+
 2013.07.25, Version 0.10.15 (Stable)
 
 * src: fix process.getuid() return value (Ben Noordhuis)
@@ -1580,7 +1590,7 @@
 
 * tls: fix CryptoStream.setKeepAlive() (Shigeki Ohtsu)
 
-* Expose http parse error codes (Felix Geisendörfer)
+* Expose http parse error codes (Felix Geisendörfer)
 
 * events: don't delete the listeners array (Ben Noordhuis, Nathan Rajlich)
 
@@ -1818,7 +1828,7 @@
 
 * pipe_wrap: don't assert() on pipe accept errors (Ben Noordhuis)
 
-* Better exception output for module load and process.nextTick (Felix Geisendörfer)
+* Better exception output for module load and process.nextTick (Felix Geisendörfer)
 
 * zlib: fix error reporting (Ben Noordhuis)
 
@@ -2617,7 +2627,7 @@ koichik, Maciej Małecki, Guglielmo Ferri, isaacs)
 
 * #1223 Fix http.ClientRequest crashes if end() was called twice (koichik)
 
-* #1383 Emit 'close' after all connections have closed (Felix Geisendörfer)
+* #1383 Emit 'close' after all connections have closed (Felix Geisendörfer)
 
 * Add sprintf-like util.format() function (Ben Noordhuis)
 
@@ -2727,7 +2737,7 @@ koichik, Maciej Małecki, Guglielmo Ferri, isaacs)
 * #853 add fs.lchow, fs.lchmod, fs.fchmod, fs.fchown (isaacs)
 
 * #889 Allow to remove all EventEmitter listeners at once
-  (Felix Geisendörfer)
+  (Felix Geisendörfer)
 
 * #926 OpenSSL NPN support (Fedor Indutny)
 
@@ -2820,7 +2830,7 @@ koichik, Maciej Małecki, Guglielmo Ferri, isaacs)
 
 * Improve documentation
 
-* #1095 error handling bug in stream.pipe() (Felix Geisendörfer)
+* #1095 error handling bug in stream.pipe() (Felix Geisendörfer)
 
 * #1097 Fix a few leaks in node_crypto.cc (Ben Noordhuis)
 
@@ -2871,12 +2881,12 @@ koichik, Maciej Małecki, Guglielmo Ferri, isaacs)
 
 * Fix a special characters in URL regression (isaacs)
 
-* Fix idle timeouts in HTTPS (Felix Geisendörfer)
+* Fix idle timeouts in HTTPS (Felix Geisendörfer)
 
 * SlowBuffer.write() with 'ucs2' throws ReferenceError. (koichik)
 
 * http.ServerRequest 'close' sometimes gets an error argument
-  (Felix Geisendörfer)
+  (Felix Geisendörfer)
 
 * Doc improvements
 
@@ -2895,7 +2905,7 @@ koichik, Maciej Małecki, Guglielmo Ferri, isaacs)
 * Don't emit error on ECONNRESET from read() #670
 
 * Fix: Multiple pipes to the same stream were broken #929
-  (Felix Geisendörfer)
+  (Felix Geisendörfer)
 
 * URL parsing/formatting corrections #954 (isaacs)
 
