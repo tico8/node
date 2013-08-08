@@ -2652,7 +2652,7 @@ static void DispatchMessagesDebugAgentCallback() {
 
 // Called from the main thread
 static void EmitDebugEnabledAsyncCallback(uv_async_t* handle, int status) {
-  HandleScope handle_scope(node_isolate);
+  HandleScope handle_scope;
   Local<Object> obj = Object::New();
   obj->Set(String::New("cmd"), String::New("NODE_DEBUG_ENABLED"));
   Local<Value> args[] = { String::New("internalMessage"), obj };
