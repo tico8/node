@@ -1,4 +1,6 @@
-2013.08.08, Version 0.10.15 (Pached)
+2013.08.12, Version 0.10.15 (Pached)
+
+* debugger, cluster: Worker debugging is started only at the time of Master debugging.
 
 * Change the implementation to match the current version of V8
 
