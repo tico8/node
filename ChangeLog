@@ -1,3 +1,15 @@
+2013.10.24, Version 0.10.21 (Pached)
+
+* debugger, cluster: Worker debugging is started only at the time of Master debugging.
+
+* Change the implementation to match the current version of V8
+
+* cluster: use round-robin load balancing (cherry picked from commit e72cd415adf2ca12daddc001cc3fe953cdb4b507)
+
+* debugger, cluster: each worker has new debug port (cherry picked from commit 43ec1b1c2e77d21c7571acd39860b9783aaf5175)
+
+* cluster: clean up lib/cluster.js (cherry picked from commit 41b75ca9263f368db790fbdcc3963bb1a8c5cb7e)
+
 2013.10.18, Version 0.10.21 (Stable)
 
 * uv: Upgrade to v0.10.18
