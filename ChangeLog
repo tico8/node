@@ -1,4 +1,4 @@
-2013.10.24, Version 0.10.21 (Pached)
+2013.10.24, Version 0.10.21 (Patched)
 
 * debugger, cluster: Worker debugging is started only at the time of Master debugging.
 
